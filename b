@@ -1,3 +1,12 @@
+
+web shell: https://blog.wasmer.io/webassembly-sh-408b010c14db
+
+https://github.com/yudai/gotty
+
+
+
+
+
 https://github.com/sigoden/llm-functions
 
 https://playground.ai.cloudflare.com/
