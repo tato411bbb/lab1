@@ -4,6 +4,8 @@ web shell: https://blog.wasmer.io/webassembly-sh-408b010c14db
 https://github.com/yudai/gotty
 
 
+https://xtermjs.org/
+
 
 
 
