@@ -93,7 +93,7 @@ TOPIC:
 
 
 
-
+https://blogs.cisco.com/security/foundation-sec-cisco-foundation-ai-first-open-source-security-model
 
 ttps://blogs.cisco.com/security/foundation-sec-cisco-foundation-ai-first-open-source-security-model
 
