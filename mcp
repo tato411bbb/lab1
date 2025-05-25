@@ -1,3 +1,6 @@
+https://github.com/Sethuram2003/mcp-ollama_server
+
+
 To create an MCP server on Ubuntu using Python that can perform two tasks—(1) create a directory /tmp/1 and (2) create a directory /tmp/2—you can use the FastMCP Python SDK. Below is a concise example of how to implement this:
 
 python
