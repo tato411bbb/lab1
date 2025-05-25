@@ -1,0 +1,173 @@
+To create an MCP server on Ubuntu using Python that can perform two tasks—(1) create a directory /tmp/1 and (2) create a directory /tmp/2—you can use the FastMCP Python SDK. Below is a concise example of how to implement this:
+
+python
+from mcp.server.fastmcp import FastMCP
+import os
+
+# Instantiate the MCP server
+mcp = FastMCP("DirectoryCreatorServer")
+
+# Tool to create /tmp/1 directory
+@mcp.tool()
+def create_tmp_1() -> str:
+    path = "/tmp/1"
+    try:
+        os.makedirs(path, exist_ok=True)
+        return f"Directory {path} created or already exists."
+    except Exception as e:
+        return f"Failed to create {path}: {str(e)}"
+
+# Tool to create /tmp/2 directory
+@mcp.tool()
+def create_tmp_2() -> str:
+    path = "/tmp/2"
+    try:
+        os.makedirs(path, exist_ok=True)
+        return f"Directory {path} created or already exists."
+    except Exception as e:
+        return f"Failed to create {path}: {str(e)}"
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio")
+Explanation:
+We import FastMCP from the MCP Python SDK and os for directory operations.
+
+We instantiate an MCP server named "DirectoryCreatorServer".
+
+We define two tools decorated with @mcp.tool():
+
+create_tmp_1() creates the directory /tmp/1.
+
+create_tmp_2() creates the directory /tmp/2.
+
+Each tool uses os.makedirs() with exist_ok=True to create the directory if it does not exist, handling any exceptions gracefully.
+
+The server is run with standard input/output transport, which is typical for MCP servers.
+
+Setup and Running:
+Install the MCP SDK in a virtual environment:
+
+bash
+python3 -m venv venv
+source venv/bin/activate
+pip install mcp mcp[cli]
+Save the above code in a file, e.g., server.py.
+
+Run the server:
+
+bash
+python server.py
+You can then connect to the MCP server using an MCP client or testing tool like MCP Inspector to invoke create_tmp_1() and create_tmp_2().
+
+This approach follows the MCP server creation pattern using the FastMCP SDK as demonstrated in examples from the MCP Python SDK documentation and tutorials.
+
+connect ollama running mistral to this mcp server
+connect ollama running mistral to this mcp server
+To connect an Ollama instance running the Mistral model to your custom MCP server (which creates directories /tmp/1 and /tmp/2), you need to set up the Ollama server and then configure an MCP client or integration that can communicate with both Ollama and your MCP server.
+
+Here’s a step-by-step outline based on best practices from the MCP-Ollama integration ecosystem:
+
+1. Start Ollama Server with Mistral Model
+Launch the Ollama server locally:
+
+bash
+ollama serve
+Pull the Mistral model you want to use (example with mistral-small:24b-instruct-2501-q4_K_M):
+
+bash
+ollama pull mistral-small:24b-instruct-2501-q4_K_M
+2. Run Your MCP Server (Directory Creator)
+Make sure your MCP server (the Python FastMCP server that creates /tmp/1 and /tmp/2) is running, e.g.:
+
+bash
+python server.py
+This server listens on stdio or a configured transport.
+
+3. Connect Ollama to Your MCP Server
+Option A: Use an MCP Client with Ollama and Your MCP Server
+You can create or use an MCP client that:
+
+Sends natural language requests to Ollama (Mistral) for processing.
+
+When Ollama decides to invoke a tool (like creating directories), it calls your MCP server’s tools.
+
+This is typically done by:
+
+Configuring Ollama as an LLM backend in your MCP client.
+
+Registering your MCP server as a tool provider.
+
+Example snippet (Python) using langchain_openai with Ollama and MCP:
+
+python
+import os
+from langchain_openai import ChatOpenAI
+from mcp import StdioServerParameters
+
+# Ollama Mistral model setup
+model_id = "mistral-small:24b-instruct-2501-q4_K_M"
+llm = ChatOpenAI(
+    base_url="http://localhost:11434/v1",  # Ollama server endpoint
+    api_key="ollama",  # Ollama API key placeholder
+    model=model_id,
+    model_kwargs={
+        "temperature": 0.15,
+        "top_p": 1.0,
+        "seed": 4424234,
+    }
+)
+
+# Your MCP server parameters (assuming stdio transport)
+mcp_server_params = StdioServerParameters(
+    command="python",
+    args=["server.py"],  # Your MCP server script
+    env=os.environ.copy(),
+)
+
+# You would then create an MCP client that routes tool calls to your MCP server
+# and uses the Ollama LLM for natural language understanding.
+
+# This setup allows Ollama to generate commands that your MCP server executes,
+# such as creating directories.
+Option B: Use MCP-Ollama Server Integration
+The MCP-Ollama Server project (GitHub: Sethuram2003/mcp-ollama_server) provides a modular bridge between Ollama models and MCP servers. You can:
+
+Deploy your MCP server as a module.
+
+Use the MCP-Ollama Server as a gateway that routes requests between Ollama and your MCP server.
+
+This architecture supports:
+
+Local data privacy.
+
+Tool invocation from Ollama models.
+
+Scalable and modular deployment.
+
+4. Testing the Integration
+Send a prompt to Ollama via your MCP client asking it to create /tmp/1 or /tmp/2.
+
+Ollama processes the prompt and issues an MCP tool call.
+
+Your MCP server receives the call and executes the directory creation.
+
+The result is returned back through the MCP protocol to Ollama and then to your client.
+
+Summary
+Start Ollama server with the Mistral model.
+
+Run your MCP server that implements directory creation.
+
+Use an MCP client or integration layer that connects Ollama’s LLM output to your MCP server’s tools.
+
+Optionally, leverage existing MCP-Ollama integration projects for easier setup and modularity.
+
+This approach is consistent with the MCP ecosystem practices for integrating Ollama LLMs with custom MCP servers.
+
+Related
+How does the MCP-Ollama server facilitate communication with Mistral models
+What steps are needed to connect Ollama's Mistral to my existing MCP server
+Can I customize the MCP protocol for better integration with Mistral models
+What are common challenges when linking Ollama running Mistral to an MCP server
+How do I ensure secure and efficient data exchange between Ollama and my MCP setup
+
