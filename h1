@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Find all .log files in the current directory, sort by modification time (newest first),
+# and store the newest file in a variable
+newest_log=$(find . -name "*.log" -printf '%T+ %p\n' | sort -nr | head -n 1 | awk '{print $2}')
+
+# Check if any .log files were found
+if [ -z "$newest_log" ]; then
+  echo "No .log files found in the current directory."
+  exit 1
+fi
+
+# Find all .log files *excluding* the newest one and delete them
+find . -name "*.log" -not -path "$newest_log" -delete
+
+echo "Old log files deleted, except for: $newest_log"
