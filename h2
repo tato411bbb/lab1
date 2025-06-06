@@ -1,0 +1,22 @@
+import streamlit as st
+import subprocess
+
+def run_shell_script(arg1, arg2):
+    # Run the shell script with two arguments
+    result = subprocess.run(['bash', '/tmp/1.sh', arg1, arg2], capture_output=True, text=True)
+    return result.stdout
+
+st.title("Run Shell Script with Two Arguments")
+
+# Input for the first argument $1
+var1 = st.text_input("Enter value for $1:")
+
+# Input for the second argument $2
+var2 = st.text_input("Enter value for $2:")
+
+if st.button("Run Script"):
+    if var1 and var2:
+        output = run_shell_script(var1, var2)
+        st.code(output)
+    else:
+        st.warning("Please enter values for both $1 and $2.")
