@@ -1,0 +1,39 @@
+import streamlit as st
+import streamlit_mermaid as stmd
+import requests
+
+# Function to call Ollama Mistral model API with user prompt
+def generate_mermaid_code(prompt: str) -> str:
+    # Replace with your Ollama Mistral API endpoint and request format
+    url = "http://localhost:11434/api/generate"  # example local endpoint
+    headers = {"Content-Type": "application/json"}
+    data = {
+        "model": "mistral",
+        "prompt": f"Generate a mermaid diagram code for the following description:\n{prompt}\nOnly output the mermaid code.",
+        "max_tokens": 500
+    }
+    response = requests.post(url, json=data, headers=headers)
+    response.raise_for_status()
+    result = response.json()
+    # Extract the generated mermaid code from response
+    return result.get("text", "")
+
+# Streamlit UI
+st.title("AI-Powered Mermaid Diagram Generator")
+
+user_input = st.text_area("Describe the diagram you want:", height=150)
+
+if st.button("Generate Diagram"):
+    if user_input.strip():
+        with st.spinner("Generating Mermaid diagram code..."):
+            mermaid_code = generate_mermaid_code(user_input)
+            if mermaid_code:
+                st.subheader("Generated Mermaid Diagram Code:")
+                st.code(mermaid_code, language="mermaid")
+                st.subheader("Rendered Diagram:")
+                stmd.st_mermaid(mermaid_code)
+            else:
+                st.error("Failed to generate Mermaid code.")
+    else:
+        st.warning("Please enter a description.")
+
