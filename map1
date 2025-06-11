@@ -1,0 +1,213 @@
+READ DIRECTORY:
+https://alejandro-ao.com/intro-to-llamaindex/
+https://www.llamaindex.ai/blog/introducing-rags-your-personalized-chatgpt-experience-over-your-data-2b9d140769b1
+
+https://github.com/alejandro-ao/yt-stream-langchain-streamlit/blob/master/src/app.py
+
+https://github.com/alejandro-ao/yt-stream-langchain-streamlit
+https://github.com/langchain-ai/streamlit-agent?ref=blog.streamlit.io
+
+https://python.langchain.com/docs/integrations/llms/ollama/
+
+
+#####################
+pip install streamlit-mermaid
+https://github.com/neka-nat/streamlit-mermaid
+https://pypi.org/project/streamlit-mermaid/
+https://github.com/LinXueyuanStdio/streamlit-markdown
+https://gist.github.com/KennyVaneetvelde/3a0882f84c4d5b5fd5882db290343b0a
+https://medium.com/@antonio.formato/serving-ollama-apis-with-advanced-security-nginx-and-azure-api-management-in-action-9d16529e501f
+https://github.com/TheMimikyu/mappa
+https://blog.streamlit.io/langchain-streamlit/
+lanchain explained how to use with streamlit.
+https://blog.streamlit.io/langchain-streamlit/
+
+
+
+
+
+https://www.mermaidchart.com/play?utm_source=mermaid_js&utm_medium=banner_ad&utm_campaign=AIbundle_A#pako:eNqrVkrOT0lVslJKzkksLnbJTEwvSsyNyVMAArCIgqehQjWEr6BgY5OZV5JalJaYnGpnBxNUUNAuy89MUSgqzdPQhAjWIhvgjGQAUC3QBIW80lzCuoEW29To6QH1K9UCANc8Lhg
+
+https://discuss.streamlit.io/t/st-markdown-does-not-render-mermaid-graphs/25576/4
+https://mermaid.js.org/config/usage.html#simple-full-example
+https://discuss.streamlit.io/t/streamlit-markdown-a-streaming-markdown-component-with-latex-mermaid-table-code-support/72187
+pip install streamlit-markdown
+
+https://github.com/LinXueyuanStdio/streamlit-markdown
+
+#####################
+ 
+
+On 11.06.2025 14:00, tato411b@posteo.net wrote:
+
+Mermaid-Llama-3-8B:
+
+
+
+
+https://blog.streamlit.io/langchain-tutorial-2-build-a-blog-outline-generator-app-in-25-lines-of-code/
+
+https://alejandro-ao.com/how-to-use-streaming-in-langchain-and-streamlit/
+https://python.langchain.com/docs/integrations/llms/ollama/
+
+
+#####################
+pip install streamlit-mermaid
+https://github.com/neka-nat/streamlit-mermaid
+https://pypi.org/project/streamlit-mermaid/
+https://github.com/LinXueyuanStdio/streamlit-markdown
+https://gist.github.com/KennyVaneetvelde/3a0882f84c4d5b5fd5882db290343b0a
+https://medium.com/@antonio.formato/serving-ollama-apis-with-advanced-security-nginx-and-azure-api-management-in-action-9d16529e501f
+https://github.com/TheMimikyu/mappa
+https://blog.streamlit.io/langchain-streamlit/
+lanchain explained how to use with streamlit.
+https://blog.streamlit.io/langchain-streamlit/
+
+
+
+
+
+https://www.mermaidchart.com/play?utm_source=mermaid_js&utm_medium=banner_ad&utm_campaign=AIbundle_A#pako:eNqrVkrOT0lVslJKzkksLnbJTEwvSsyNyVMAArCIgqehQjWEr6BgY5OZV5JalJaYnGpnBxNUUNAuy89MUSgqzdPQhAjWIhvgjGQAUC3QBIW80lzCuoEW29To6QH1K9UCANc8Lhg
+
+https://discuss.streamlit.io/t/st-markdown-does-not-render-mermaid-graphs/25576/4
+https://mermaid.js.org/config/usage.html#simple-full-example
+https://discuss.streamlit.io/t/streamlit-markdown-a-streaming-markdown-component-with-latex-mermaid-table-code-support/72187
+pip install streamlit-markdown
+
+https://github.com/LinXueyuanStdio/streamlit-markdown
+
+#####################
+@2222222222222222222222222
+
+
+import streamlit as st
+import streamlit_mermaid as stmd
+from langchain_ollama import ChatOllama
+
+st.title("Create Diagrams with Mistral & Mermaid")
+
+prompt = st.text_area("Describe what you want to visualize as a diagram:")
+
+if st.button("Generate Diagram"):
+    if prompt.strip():
+        # Connect to Ollama Mistral model
+        chat_model = ChatOllama(model="mistral:instruct")
+
+        # Ask Mistral to generate Mermaid code for a diagram
+        mermaid_prompt = f"""
+        Based on the following description, generate Mermaid code for a diagram (flowchart, sequence, etc.).
+        Return only the code, no explanation or extra text.
+        ---
+        {prompt}
+        ---
+        """
+        response = chat_model.invoke({"messages": [{"role": "user", "content": mermaid_prompt}]})
+        mermaid_code = response.content
+
+        # Display the Mermaid code
+        st.write("**Mermaid Code:**")
+        st.code(mermaid_code)
+
+        # Display the diagram
+        st.write("**Diagram:**")
+        stmd.st_mermaid(mermaid_code)
+    else:
+        st.warning("Please enter a description for your diagram.")
+
+
+
+
+
+
+
+
+
+################################
+
+
+import streamlit as st
+import streamlit_mermaid as stmd
+from langchain_ollama import ChatOllama
+
+# Title
+st.title("Chat with Mistral & Generate Mermaid Charts")
+
+# User input
+prompt = st.text_area("Enter your question or prompt:")
+
+if st.button("Ask"):
+    if prompt.strip():
+        # Connect to Ollama Mistral model
+        chat_model = ChatOllama(model="mistral:instruct")
+        
+        # Ask for a Mermaid chart based on the prompt
+        mermaid_prompt = f"""
+        Based on the following prompt, generate a Mermaid diagram code only (do not add explanations):
+        ---
+        {prompt}
+        ---
+        """
+        # Get the response (Mermaid code)
+        response = chat_model.invoke({"messages": [{"role": "user", "content": mermaid_prompt}]})
+        mermaid_code = response.content
+
+        # Display the response
+        st.write("**Response:**")
+        st.write(mermaid_code)
+
+        # Display the Mermaid chart
+        st.write("**Mermaid Chart:**")
+        stmd.st_mermaid(mermaid_code)
+    else:
+        st.warning("Please enter some text to ask.")
+
+
+
+
+
+
+
+
+
+
+
+##########################
+
+
+graph LR
+  A[Start] --> B[Process]
+  B --> C[End]
+
+
+
+Flowchart Direction: Use keywords like graph TD (top-down), graph LR (left-right), or graph RL (right-left) at the start of your diagram code to control layout direction
+text
+2. Use Front Matter for Configuration
+
+YAML-like Front Matter: Add configuration before your diagram to set themes, colors, and other options. This is supported in environments where Mermaid processes front matter (like Mermaid Live Editor, some Markdown renderers, or via custom configuration)
+
+text
+3. Apply CSS-like Styles
+
+Inline Styling: Use curly braces to style individual nodes or links. This is especially useful for flowcharts
+
+text
+4. Use Themes
+
+.
+
+Example:
+
+ 
+.
+
+Example:
+
+ 
+.
+
+Example:
+
+ 
+
+ 
