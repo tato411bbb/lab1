@@ -66,3 +66,336 @@ if st.button("Generate Diagram"):
     else:
         st.warning("Please enter a description.")
 
+#################################
+
+################################
+
+#################################
+
+
+import random
+import time
+from datetime import timedelta
+import streamlit as st
+from logzero import logger
+from plantuml import PlantUML
+from pydantic import BaseModel
+from supersullytools.llm.agent import AgentTool, ChatAgent, AgentToolResponse
+from supersullytools.llm.trackers import SessionUsageTracking
+from supersullytools.streamlit.chat_agent_utils import ChatAgentUtils
+from supersullytools.utils.common_init import get_standard_completion_handler
+from supersullytools.utils.misc import date_id
+import requests  # <-- Added for Ollama
+
+st.set_page_config(
+    page_title="PlantUML Diagram Editor",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
+
+def main():
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = date_id()
+    if "diagram_code_versions" not in st.session_state:
+        st.session_state.diagram_code_versions = []
+    if "toggle_key_counter" not in st.session_state:
+        st.session_state.toggle_key_counter = 0
+    if "diagram_code" not in st.session_state:
+        st.session_state.diagram_code = DEFAULT_DIAGRAM_CODE
+
+    agent = get_agent(st.session_state.session_id)
+    agent_utils = ChatAgentUtils(agent, use_system_slash_cmds=False)
+
+    col1, col2, col3 = st.columns(3)
+    display_code = st.session_state.diagram_code
+
+    with col2:
+        with st.container():
+            placeholder = st.empty()
+            if st.toggle(
+                "View Previous Versions",
+                key=f"view_previous{st.session_state.toggle_key_counter}",
+            ):
+                if not st.session_state.diagram_code_versions:
+                    st.write("No previous versions available")
+                else:
+                    minus_version = st.number_input(
+                        "Versions back",
+                        min_value=0,
+                        max_value=len(st.session_state.diagram_code_versions),
+                    )
+                    if minus_version == 0:
+                        st.caption("This is the current version")
+                    else:
+                        go_back = minus_version * -1
+                        s = "s" if minus_version > 1 else ""
+                        st.caption(f"This is {minus_version} edit{s} ago")
+                        display_code = st.session_state.diagram_code_versions[go_back]
+                    st.code(display_code)
+            else:
+                edited = placeholder.text_area(
+                    "diagram code",
+                    st.session_state.diagram_code,
+                    height=600,
+                )
+                if edited != st.session_state.diagram_code:
+                    st.session_state.diagram_code_versions.append(
+                        st.session_state.diagram_code
+                    )
+                    st.session_state.diagram_code = edited
+                    st.rerun()
+
+    with col3:
+        this_theme = st.selectbox(
+            "theme", THEMES, None, disabled="!theme" in display_code
+        )
+        if "!theme" not in display_code and not this_theme:
+            if "random_theme" not in st.session_state:
+                st.session_state.random_theme = random.choice(THEMES)
+            this_theme = st.session_state.random_theme
+        if this_theme:
+            with st.container(border=True):
+                st.caption(f'Shown with theme "{this_theme}"')
+                def _remove():
+                    st.session_state.random_theme = None
+                st.button("Remove", on_click=_remove, use_container_width=True)
+        if display_code:
+            if this_theme:
+                lines = display_code.splitlines()
+                lines.insert(1, f"!theme {this_theme}")
+                display_code = "\n".join(lines)
+            st.image(get_uml_diagram_svg(display_code))
+
+    with col1:
+        chat_msg = st.chat_input(placeholder="message to ai", max_chars=1000)
+        if agent.get_chat_history():
+            st.caption(
+                "It's generally useful to wipe the chat history any time "
+                'you are done with a particular "feature" or independent change on the diagram.'
+            )
+            st.button(
+                "Clear chat history",
+                help="Wipe out the chat history without erasing the diagram code",
+                on_click=agent.reset_history,
+            )
+        agent.add_to_context("current_diagram", st.session_state.diagram_code)
+        before = st.session_state.diagram_code
+        display_chat_and_run_agent(agent_utils, include_function_calls=False)
+        after = st.session_state.diagram_code
+        if before != after:
+            st.session_state.diagram_code_versions.append(before)
+            st.rerun()
+        if chat_msg:
+            if agent_utils.add_user_message(chat_msg):
+                time.sleep(0.01)
+                st.rerun()
+        if not agent.get_chat_history():
+            st.caption(
+                "👋 Welcome to your AI PlantUML Assistant! You can chat to create or modify PlantUML diagrams, "
+                "or edit the code directly in the panel. You can also ask to explain the current code. "
+                "Need inspiration? Check out [Real World PlantUML](https://real-world-plantuml.com/) "
+                "for examples and starting points. PlantUML can produce an incredible variety of diagram types. "
+                "The [PlantUML Theme Gallery](https://the-lum.github.io/puml-themes-gallery/diagrams/index.html) "
+                "is another great resource."
+            )
+
+    if (
+        not agent.get_chat_history()
+        and st.session_state.diagram_code == DEFAULT_DIAGRAM_CODE
+    ):
+        st.subheader("Example Diagrams")
+        cols = iter(st.columns(3))
+        for idx, title in enumerate(DIAGRAM_EXAMPLES):
+            if idx % 3 == 0:
+                cols = iter(st.columns(3))
+            code = DIAGRAM_EXAMPLES[title]
+            with next(cols).container(border=True):
+                st.write(f"**{title}**")
+                st.popover("code", use_container_width=True).code(code)
+                st.image(get_uml_diagram_svg(code))
+                if st.button(
+                    "Load this diagram",
+                    key=f"load-{title}",
+                    use_container_width=True,
+                    type="primary",
+                ):
+                    st.session_state.diagram_code = code
+                    st.rerun()
+
+def display_chat_and_run_agent(agent_utils, include_function_calls=True):
+    num_chat_before = len(
+        agent_utils.chat_agent.get_chat_history(
+            include_function_calls=include_function_calls
+        )
+    )
+    new_messages = st.container()
+    previous_msg_role = ""
+    for msg in reversed(
+        agent_utils.chat_agent.get_chat_history(
+            include_function_calls=include_function_calls
+        )
+    ):
+        if msg.role == previous_msg_role:
+            st.divider()
+        previous_msg_role = msg.role
+        with st.chat_message(msg.role):
+            agent_utils.display_chat_msg(msg.content)
+    with new_messages:
+        if agent_utils.chat_agent.working:
+            with st.status("Agent working...", expanded=True) as status:
+                def status_callback_fn(message):
+                    status.update(label=f"Agent working... {message}", state="running")
+                    st.write(message)
+                while agent_utils.chat_agent.working:
+                    agent_utils.chat_agent.run_agent(
+                        status_callback_fn=status_callback_fn
+                    )
+                    time.sleep(0.05)
+                status.update(
+                    label="Agent completed work!", state="complete", expanded=False
+                )
+        for msg in agent_utils.chat_agent.get_chat_history(
+            include_function_calls=include_function_calls
+        )[num_chat_before:]:
+            with st.chat_message(msg.role):
+                agent_utils.display_chat_msg(msg.content)
+
+AGENT_DESCRIPTION = """
+You are an AI assistant engaging in a conversation about UML diagrams of any type. Your role is to help the user in understanding, creating, and modifying UML diagrams as requested.
+You also have the ability to directly update the diagram code whenever the user requests changes. You have continuous access to the current state of the UML diagram code, allowing you to keep track of the latest version and apply modifications accurately.
+Make sure to present explanations in a way that the user can not only understand the content of the diagram but also appreciate the underlying structure and precise context of the UML. Make each modification traceable by explaining your updates step-by-step.
+
+# Instructions for Interaction
+
+- Ask follow-up questions when necessary to clarify the user's needs regarding modifications or areas of concern.
+- Use easy-to-understand language, while highlighting key components of UML diagrams such as Classes, Relationships, Dependencies, etc.
+- Be ready to handle different types of UML diagrams such as Class, Sequence, Activity, Use Case, etc.
+
+# Usage of the Diagram Modification Tool
+
+When the user asks for changes to be made to the active UML diagram, you may directly modify the current state of the diagram code.
+Provide a brief expalanation of the changes you are making, but do not include the code itself in your explanations.... # Notes
+
+- Remember that different types of UML diagrams (e.g., sequence vs. class diagrams) have different components and purposes. Adjust your code and explanations accordingly.
+- The user can see the diagram and current version of the code at all times so do not repeat the code to them
+""".strip()
+
+class UpdateUmlDiagramCode(BaseModel):
+    diagram_code: str
+
+def handle_update_uml_diagram_tool(params: UpdateUmlDiagramCode):
+    st.session_state.diagram = get_uml_diagram_svg(params.diagram_code)
+    st.session_state.diagram_code = params.diagram_code
+    get_agent(st.session_state.session_id).add_to_context(
+        "current_diagram", st.session_state.diagram_code
+    )
+    return AgentToolResponse(output_content="Diagram updated!", replace_input="")
+
+# --- BEGIN OLLAMA HANDLER ---
+
+def ollama_completion_handler(prompt, chat_history=None, **kwargs):
+    """
+    Calls a local Ollama server running the 'mistral' model.
+    """
+    url = "http://192.168.44.1:3344/api/chat"
+    payload = {
+        "model": "mistral",
+        "messages": [{"role": "user", "content": prompt}],
+        "stream": False
+    }
+    if chat_history:
+        payload["messages"] = chat_history + payload["messages"]
+    try:
+        response = requests.post(url, json=payload, timeout=60)
+        response.raise_for_status()
+        result = response.json()
+        return result["message"]["content"]
+    except Exception as e:
+        return f"Ollama error: {e}"
+
+# --- END OLLAMA HANDLER ---
+
+@st.cache_resource(ttl=timedelta(hours=1))
+def get_agent(session_id: str) -> ChatAgent:
+    _ = session_id
+    tool_profiles = {
+        "all": [
+            AgentTool(
+                name=UpdateUmlDiagramCode.__name__,
+                params_model=UpdateUmlDiagramCode,
+                mechanism=handle_update_uml_diagram_tool,
+                safe_tool=True,
+            ),
+        ]
+    }
+    return ChatAgent(
+        agent_description=AGENT_DESCRIPTION,
+        logger=logger,
+        completion_handler=ollama_completion_handler,  # <-- Use Ollama here!
+        tool_profiles=tool_profiles,
+        max_consecutive_tool_calls=1,
+        default_completion_model="mistral",
+        require_reason=False,
+        user_preferences=[
+            "Remember to NOT include large sections of the code in your chat responses -- I have a limited display for your response, and the code is always visible to me!!"
+        ],
+    )
+
+@st.cache_resource(ttl=timedelta(hours=1))
+def get_session_usage_tracker(session_id: str) -> SessionUsageTracking:
+    _ = session_id
+    return SessionUsageTracking()
+
+@st.cache_resource()
+def get_uml_diagram_svg(uml_code):
+    logger.info("Getting diagram from remote")
+    url = PlantUML(url="http://www.plantuml.com/plantuml/img/")
+    return url.get_url(uml_code)
+
+THEMES = [
+    "amiga", "aws-orange", "black-knight", "bluegray", "blueprint",
+    "carbon-gray", "cerulean-outline", "cerulean", "cloudscape-design",
+    "crt-amber", "crt-green", "cyborg-outline", "cyborg", "hacker",
+    "lightgray", "mars", "materia-outline", "materia", "metal",
+    "mimeograph", "minty", "mono", "_none_", "plain", "reddress-darkblue",
+    "reddress-darkgreen", "reddress-darkorange", "reddress-darkred",
+    "reddress-lightblue", "reddress-lightgreen", "reddress-lightorange",
+    "reddress-lightred", "sandstone", "silver", "sketchy-outline",
+    "sketchy", "spacelab-white", "spacelab", "sunlust", "superhero-outline",
+    "superhero", "toy", "united", "vibrant",
+]
+
+DEFAULT_DIAGRAM_CODE = """
+@startuml
+actor User
+participant "Chat Panel" as Chat
+participant "Code Panel" as Code
+participant "Render Panel" as Render
+User -> Chat : Type message
+Chat -> User : AI replies
+Chat -> Code: AI Edits diagram code
+User -> Code : Manually Edit diagram code
+Code -> Render : Automatically update diagram
+@enduml
+""".strip()
+
+DIAGRAM_EXAMPLES = {
+    "JSON Diagram": """
+@startjson
+
+"title": "Pizza Ordering Workflow",
+"actors": ["Customer", "PizzaApp", "PizzaChef", "DeliveryDriver"],
+"steps": [
+  { "from": "Customer", "to": "PizzaApp", "action": "Order Pineapple Pizza" },
+  { "from": "PizzaApp", "to": "PizzaChef", "action": "Make Pizza (sigh)" },
+  { "from": "PizzaChef", "to": "DeliveryDriver", "action": "Hand Over Pizza" },
+  { "from": "DeliveryDriver", "to": "Customer", "action": "Deliver with Judgement" }
+]
+
+@endjson
+""".strip(),
+    # ... (other diagram examples unchanged) ...
+}
+
+if __name__ == "__main__":
+    main()
