@@ -1,3 +1,32 @@
+
+https://diagrams.streamlit.app/
+https://github.com/msull/llm-diagram-tool/tree/main
+https://github.com/msull/llm-diagram-tool/blob/main/streamlit_app.py
+
+https://real-world-plantuml.com/?type=usecase
+https://the-lum.github.io/puml-themes-gallery/diagrams/index.html
+
+git search UML ollama
+
+https://topai.tools/s/ollama-uml-diagram-generator
+https://github.com/davidkingzyb/SCAST
+
+https://github.com/shanojpillai/flow-diagram-assistant
+
+
+https://n8n.io/workflows/4765-generate-and-optimize-brand-stories-with-ollama-llms-and-google-sheets/
+
+automation:
+https://github.com/farhan0167/otto-m8
+
+https://modeling-languages.com/uml-tools/
+
+
+
+
+
+###########################################################
+
 import streamlit as st
 import streamlit_mermaid as stmd
 import requests
