@@ -1,0 +1,27 @@
+
+<input type="dropdown" token="re_tok" searchWhenChanged="true">
+<label>re</label>
+<choice value="ee1">ee1text</choice>
+<choice value="ee2">ee2text</choice>
+<change>
+<eval token="tokenA">mvfind($re_tok$, "ee1")</eval>
+<eval token="tokenB">mvfind($re_tok$, "ee2")</eval>
+</change>
+<default>nm</default>
+<initialValue>nm</initialValue>
+</input>
+
+<panel depends="$tokenA$">
+
+<panel depends="$tokenB$">
+
+
+<init>
+<set token="tokenA">ee1</set>
+### <set token="tokenB">ee2</set>
+</init>
+
+
+
+
+ 
