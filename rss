@@ -1,0 +1,106 @@
+
+
+/feeds/
+
+######################
+
+cybersecurity-rss.xml.
+
+<image>
+<url>https://example.org/images/cybersec-icon.png</url>
+<title>Cybersecurity News</title>
+<link>https://example.org/cybersec</link>
+<width>64</width>
+<height>64</height>
+</image>
+
+<category>Cybersecurity</category>
+<category>Threat Intelligence</category>
+<category>Security Best Practices</category>
+
+<item>
+<title>Zero-Day in Popular VPN Disclosed: Patch Available</title>
+<link>https://example.org/cybersec/updates/zero-day-vpn-patch</link>
+<guid isPermaLink="true">https://example.org/cybersec/updates/zero-day-vpn-patch</guid>
+<pubDate>Thu, 30 Oct 2025 06:30:00 GMT</pubDate>
+<description><![CDATA[Researchers disclosed a critical zero-day affecting multiple VPN products. The advisory includes indicators of compromise (IOCs) and a CVSS score of 9.1. Vendors released patches within 24 hours; users should apply updates and rotate credentials. This article covers the vulnerability details, affected products, exploitation patterns, and recommended mitigations.]]></description>
+<category>Vulnerabilities</category>
+<category>Patch Management</category>
+</item>
+
+<item>
+<title>Microsoft Announces Windows Defender Improvements for 2025</title>
+<link>https://example.org/cybersec/updates/windows-defender-2025</link>
+<guid isPermaLink="true">https://example.org/cybersec/updates/windows-defender-2025</guid>
+<pubDate>Thu, 30 Oct 2025 05:15:00 GMT</pubDate>
+<description><![CDATA[Microsoft released an upgrade to Windows Defender with enhanced AI-based malware detection, improved cloud-delivered protection, and extended EDR capabilities. The post outlines new features, deployment tips, and potential impact on enterprise security operations.]]></description>
+<category>Endpoint Security</category>
+<category>Product Updates</category>
+</item>
+
+<item>
+<title>Threat Intel: Poised RDP Campaign Targets Small Businesses</title>
+<link>https://example.org/cybersec/threat-intel/rdp-campaign</link>
+<guid isPermaLink="true">https://example.org/cybersec/threat-intel/rdp-campaign</guid>
+<pubDate>Thu, 30 Oct 2025 04:45:00 GMT</pubDate>
+<description><![CDATA[Threat researchers observe an uptick in remote desktop protocol (RDP) brute-force campaigns aimed at SMBs. The report includes observed TTPs, recommended hardening steps, and how to set up alerting to detect anomalies in RDP usage.]]></description>
+<category>Threat Intelligence</category>
+<category>Attack Trends</category>
+</item>
+
+<item>
+<title>SecOps Best Practice: Immutable Backups for Ransomware Resilience</title>
+<link>https://example.org/cybersec/best-practices/immutable-backups</link>
+<guid isPermaLink="true">https://example.org/cybersec/best-practices/immutable-backups</guid>
+<pubDate>Wed, 29 Oct 2025 23:00:00 GMT</pubDate>
+<description><![CDATA[An in-depth guide to implementing immutable, air-gapped backups and tested restoration procedures to minimize ransomware impact. Includes a checklists, technology options, and recovery time objectives (RTOs).]]></description>
+<category>Backup & Recovery</category>
+<category>Ransomware</category>
+</item>
+
+<item>
+<title>Supply Chain Security: Securing Open Source Dependencies</title>
+<link>https://example.org/cybersec/reports/supply-chain-deps</link>
+<guid isPermaLink="true">https://example.org/cybersec/reports/supply-chain-deps</guid>
+<pubDate>Thu, 30 Oct 2025 03:40:00 GMT</pubDate>
+<description><![CDATA[A practical look at securing open source software supply chains, including SBOM usage, dependency scanning, license risk, and vulnerability management across CI/CD pipelines.]]></description>
+<category>Software Supply Chain</category>
+<category>OSS Security</category>
+</item>
+
+<item>
+<title>Phishing Landscape 2025: Evolving Techniques and Defenses</title>
+<link>https://example.org/cybersec/reports/phishing-2025</link>
+<guid isPermaLink="true">https://example.org/cybersec/reports/phishing-2025</guid>
+<pubDate>Thu, 30 Oct 2025 02:20:00 GMT</pubDate>
+<description><![CDATA[Industry analysis of phishing trends, including automation, deepfake lures, and brand impersonation. The piece provides user education tips and technical controls to reduce risk.]]></description>
+<category>Phishing</category>
+<category>Awareness</category>
+</item>
+
+<item>
+<title>Cloud Security Posture Management: Critical Lessons from 2025</title>
+<link>https://example.org/cybersec/reports/cspm-2025</link>
+<guid isPermaLink="true">https://example.org/cybersec/reports/cspm-2025</guid>
+<pubDate>Thu, 30 Oct 2025 01:10:00 GMT</pubDate>
+<description><![CDATA[Assessment of CSPM trends, misconfigurations, and remediation playbooks. Includes guidance on integrating CSPM with CI/CD and incident response.]]></description>
+<category>Cloud Security</category>
+<category>CSPM</category>
+</item>
+
+<item>
+<title>Zero Trust Architecture: Progress and Challenges</title>
+<link>https://example.org/cybersec/analysis/zero-trust</link>
+<guid isPermaLink="true">https://example.org/cybersec/analysis/zero-trust</guid>
+<pubDate>Thu, 30 Oct 2025 00:05:00 GMT</pubDate>
+<description><![CDATA[Exploration of zero trust principles in real deployments, including identity, device posture, micro-segmentation, and continuous verification.]]></description>
+<category>Identity & Access</category>
+<category>Network Security</category>
+</item>
+
+<item>
+<title>Incident Response Playbook: From Detection to Lessons Learned</title>
+<link>https://example.org/cybersec/incident-response/playbook</link>
+<guid isPermaLink="true">https://example.org/cybersec/incident-response/playbook</guid>
+<pubDate>Wed, 29 Oct 2025 22:15:00 GMT</pubDate>
+<description
