@@ -2,6 +2,28 @@
 
 /feeds/
 
+
+########################
+
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Example Feed</title>
+    <link>https://example.org/</link>
+    <description>Example RSS feed</description>
+    <item>
+      <title>Example item</title>
+      <link>https://example.org/item1</link>
+      <description>This is an example item description.</description>
+      <pubDate>Thu, 30 Oct 2025 07:00:00 GMT</pubDate>
+      <guid>https://example.org/item1</guid>
+    </item>
+  </channel>
+</rss>
+
+
+
 ######################
 
 cybersecurity-rss.xml.
