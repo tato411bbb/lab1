@@ -1,3 +1,27 @@
+#!/bin/bash
+
+# Enable IP forwarding
+echo "Enabling IP forwarding..."
+sudo sysctl -w net.ipv4.ip_forward=1
+
+# Flush existing NAT PREROUTING and POSTROUTING rules
+echo "Flushing existing NAT PREROUTING and POSTROUTING rules..."
+sudo iptables -t nat -F PREROUTING
+sudo iptables -t nat -F POSTROUTING
+
+# Add DNAT rule to forward TCP port 33 to host C (192.168.2.3)
+echo "Adding DNAT rule to forward TCP port 33 to 192.168.2.3:33..."
+sudo iptables -t nat -A PREROUTING -p tcp --dport 33 -j DNAT --to-destination 192.168.2.3:33
+
+# Add MASQUERADE rule for outgoing packets from B's subnet going to C
+echo "Adding MASQUERADE rule for packets forwarded to 192.168.2.3..."
+sudo iptables -t nat -A POSTROUTING -p tcp -d 192.168.2.3 --dport 33 -j MASQUERADE
+
+# Allow forwarding of the forwarded packets
+echo "Allowing forwarding to 192.168.2.3:33..."
+sudo iptables -A FORWARD -p tcp -d 192.168.2.3 --dport 33 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+echo "Port forwarding with masquerading setup complete."
 
 
 /feeds/
