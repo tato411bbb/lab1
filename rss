@@ -1,4 +1,4 @@
-#!/bin/bash
+s#!/bin/bash
 
 # Enable IP forwarding
 echo "Enabling IP forwarding..."
