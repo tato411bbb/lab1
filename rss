@@ -1,3 +1,38 @@
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+sudo npm install -g n8n
+n8n start
+http://localhost:5678
+
+
+
+# n8n basic environment variables
+
+# Webhook and API endpoints
+N8N_ENDPOINT_WEBHOOK=webhook
+N8N_ENDPOINT_REST=rest
+N8N_BASIC_AUTH_ACTIVE=true
+
+# Max payload sizes (in MiB)
+N8N_PAYLOAD_SIZE_MAX=16
+N8N_FORMDATA_FILE_SIZE_MAX=200
+
+# Enable metrics (true/false)
+N8N_METRICS=false
+
+# Database configuration (example for SQLite)
+DB_TYPE=sqlite
+
+# Optional: Webhook URL if running behind a reverse proxy
+# WEBHOOK_URL=https://kjn8n.org
+
+# Optional: Credentials and secrets (use _FILE suffix for sensitive)
+# N8N_BASIC_AUTH_USER=admin
+# N8N_BASIC_AUTH_PASSWORD=op3n244
+
+
+
+
 s#!/bin/bash
 
 # Enable IP forwarding
