@@ -4,7 +4,11 @@
 plink.exe -N -L 34:192.168.1.33:44 user@ssh-server -auto-reconnect
  
 
+continue:
+https://medium.com/@texchi2/setting-up-a-remote-ai-code-assistant-ollama-continue-in-vs-code-ce94101c7dc6
+https://www.xda-developers.com/this-free-vs-code-extension-uses-locally-hosted-llm-to-help-code/
 
+https://github.com/GustyCube/ollama-vscode
 
 https://www.warp.dev/university/developer-workflows/how-to-setup-ollama-using-warp
 ollama run opencoder
@@ -13,7 +17,12 @@ VSCode Ollama
 Open Copilot 
 https://www.2am.tech/blog/integrate-ollama-with-visual-studio-code-for-ai-coding-assistance
 CodeGPT
+Local AI Pilot - Ollama, Deepseek-R1, and more
+Offline AI |  14,047 installs
+|
 
+(5)
+ | Free
 
 
 server {
