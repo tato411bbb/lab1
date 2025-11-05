@@ -3,3 +3,17 @@ https://www.youtube.com/watch?v=CyZxRU0ax3Q
 
 https://github.com/BrainBlend-AI/atomic-agents?tab=readme-ov-file
 
+
+
+The top 5 VSCode coding assistant plugins that support Ollama local LLMs are:
+
+Continue - This VS Code extension integrates Ollama models to provide AI-powered code completion, natural language-to-code, code explanation, and refactoring suggestions. It connects directly with Ollama local models like Llama 2 and Code Llama for offline, private AI coding help.​​
+
+CodeGPT - This plugin can be configured to use Ollama as the backend for local LLMs like OpenCoder. It enables code suggestions, completions, and debugging assistance inside VS Code, leveraging your locally running Ollama models.​
+
+Twinny - A VS Code/Codium extension that supports interaction with Ollama servers and llama.cpp. It provides chat and code auto-completion features powered by local models managed through Ollama.​
+
+Cody AI - Another advanced VS Code extension with chat and code generation capabilities that can connect to Ollama servers. It requires sign-in but supports instruct and base models running locally with Ollama.​
+
+Cline - A plugin that allows usage of local Ollama models such as Gemma 2 and Claude 3.7 for AI coding assistance directly within VS Code, supporting prompt-driven code generation and completion.​
+
