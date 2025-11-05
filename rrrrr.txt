@@ -1,0 +1,84 @@
+
+
+
+plink.exe -N -L 34:192.168.1.33:44 user@ssh-server -auto-reconnect
+ 
+
+
+
+https://www.warp.dev/university/developer-workflows/how-to-setup-ollama-using-warp
+ollama run opencoder
+
+VSCode Ollama
+Open Copilot 
+https://www.2am.tech/blog/integrate-ollama-with-visual-studio-code-for-ai-coding-assistance
+CodeGPT
+
+
+
+server {
+    listen 127.0.0.1:3588;
+    server_name localhost;
+
+    location / {
+        # Your configuration here
+        try_files $uri $uri/ =404;
+    }
+}
+
+
+####################################################
+
+
+
+curl -X POST -H "Content-Type: application/json" -d '{"username":"admin","password":"your_password"}' http://<cribl-leader-host>:<port>/api/v1/auth/login
+
+
+
+
+{
+  "nodes": [
+    {
+      "parameters": {
+        "url": "http://<cribl-leader-host>:<port>/api/v1/auth/login",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "{\"username\":\"admin\",\"password\":\"1234\"}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "name": "Get Cribl API Token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [450, 300]
+    }
+  ]
+}
+
+
+
+
+
+##############################
+
+token
+
+{
+  "nodes": [
+    {
+      "parameters": {
+        "url": "http://<cribl-leader-host>:<port>/api/v1/some_endpoint",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer {{$node[\"Get Cribl API Token\"].json[\"token\"]}}"
+        }
+      },
+      "name": "Use Cribl Token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [650, 300]
+    }
+  ]
+}
