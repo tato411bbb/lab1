@@ -1,2 +1,61 @@
 https://docs.cyberark.com/pam-self-hosted/latest/en/content/pas%20sysreq/system%20requirements%20-%20psmp.htm
 
+To create an n8n workflow configuration that queries a Cribl standalone server using the Cribl API to list all routes, the main approach involves using the HTTP Request node in n8n. The node makes an authenticated GET request to the Cribl API endpoint /api/v1/m/{module}/routes which lists routes.
+
+The Cribl API uses a Bearer token for authorization. The HTTP Request node will be set to:
+
+HTTP Method: GET
+
+URL: e.g. http://localhost:19000/api/v1/m/default/routes (the module path may vary, typically default for standalone)
+
+Authentication: Bearer token
+
+Headers: Authorization: Bearer <your_token>, plus accept: application/json
+
+The response from this GET call will be the JSON list of all routes configured on the Cribl server.
+
+Summary:
+
+Use n8n HTTP Request node.
+
+Set method to GET.
+
+Set URL to http://<cribl-host>:<port>/api/v1/m/default/routes.
+
+Add header Authorization: Bearer <token>.
+
+Set Accept: application/json.
+
+Execute request to get all routes.
+
+Here is a basic example of the HTTP Request node configuration:
+
+json
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "url": "http://localhost:19000/api/v1/m/default/routes",
+        "headers": [
+          {
+            "name": "Authorization",
+            "value": "Bearer YOUR_BEARER_TOKEN"
+          },
+          {
+            "name": "accept",
+            "value": "application/json"
+          }
+        ]
+      },
+      "name": "Get Cribl Routes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [450, 300]
+    }
+  ],
+  "connections": {}
+}
+This can be imported or recreated in n8n, replacing localhost:19000 and the token with your actual Cribl hostname/port and token.
+
+This method is supported by the Cribl API docs regarding using GET on /routes to list all routes, and n8n's ability to make HTTP requests with Bearer auth headers.​
